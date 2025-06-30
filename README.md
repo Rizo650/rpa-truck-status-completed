@@ -73,7 +73,7 @@ The automation connects directly to the company's database to fetch the latest t
 
 Below is an example of the report that this automation sends to the WhatsApp group:
 
-![Sample WhatsApp Report](Screenshots/whatsapp-report-sample.png)
+![Sample WhatsApp Report](Screenshots/whatsapp-report-sample.jpeg)
 
 ## Contact
 
