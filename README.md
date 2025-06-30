@@ -1,83 +1,40 @@
-# Truck Status Report Automation - UiPath RPA
+### Documentation is included in the Documentation folder ###
 
-This RPA project automates the generation of truck status reports by retrieving data directly from a database, performing data validation and manipulation, and formatting the results into a structured report. The final report is then automatically sent to a WhatsApp group using web automation via WhatsApp Web.
+[REFrameWork Documentation](https://github.com/UiPath/ReFrameWork/blob/master/Documentation/REFramework%20documentation.pdf)
 
-## Project Description
+### REFrameWork Template ###
+**Robotic Enterprise Framework**
 
-The automation connects directly to the company's database to fetch the latest truck activity data. It validates and processes the data, then formats it into a clear and concise report, which is delivered to the relevant WhatsApp group for real-time monitoring of truck statuses. This solution reduces manual effort, ensures timely reporting, and minimizes human error.
+* Built on top of *Transactional Business Process* template
+* Uses *State Machine* layout for the phases of automation project
+* Offers high level logging, exception handling and recovery
+* Keeps external settings in *Config.xlsx* file and Orchestrator assets
+* Pulls credentials from Orchestrator assets and *Windows Credential Manager*
+* Gets transaction data from Orchestrator queue and updates back status
+* Takes screenshots in case of system exceptions
 
-## Features
 
-- Direct integration with SQL database
-- Automated data validation and transformation
-- Modular workflow structure for scalability and maintainability
-- Generates formatted text-based reports for WhatsApp
-- Sends the report via web automation on WhatsApp Web (UI-based automation)
-- Automated error handling with screenshots of exceptions
-- Can be executed manually or scheduled via Orchestrator
+### How It Works ###
 
-## Important Notes on WhatsApp Integration
+1. **INITIALIZE PROCESS**
+ + ./Framework/*InitiAllSettings* - Load configuration data from Config.xlsx file and from assets
+ + ./Framework/*GetAppCredential* - Retrieve credentials from Orchestrator assets or local Windows Credential Manager
+ + ./Framework/*InitiAllApplications* - Open and login to applications used throughout the process
 
-- This automation uses **UI-based web automation on WhatsApp Web**, not WhatsApp API.
-- It requires that WhatsApp Web is logged in on the machine where the robot runs.
-- Stability depends on WhatsApp Web's UI layout; significant UI changes might require adjustments to selectors.
-- Ensure stable internet connection and that WhatsApp Web is accessible during execution.
+2. **GET TRANSACTION DATA**
+ + ./Framework/*GetTransactionData* - Fetches transactions from an Orchestrator queue defined by Config("OrchestratorQueueName") or any other configured data source
 
-## Project Structure
+3. **PROCESS TRANSACTION**
+ + *Process* - Process trasaction and invoke other workflows related to the process being automated 
+ + ./Framework/*SetTransactionStatus* - Updates the status of the processed transaction (Orchestrator transactions by default): Success, Business Rule Exception or System Exception
 
-| Folder/File                 | Description                                                   |
-|-----------------------------|---------------------------------------------------------------|
-| Main.xaml                   | Main entry point of the automation                            |
-| Modular/                    | Contains reusable workflows for specific tasks                |
-| Data/Config.xlsx             | Stores configuration data such as database connections        |
-| Data/Output/                | Folder for generated reports (if needed)                      |
-| Framework/                  | REFramework components (if applicable)                        |
-| Screenshots/                | Contains sample screenshots of the generated WhatsApp report  |
-| Exceptions_Screenshots/     | Stores screenshots captured during exceptions or errors       |
-| project.json                 | UiPath project metadata                                       |
-| README.md                    | Project documentation                                         |
+4. **END PROCESS**
+ + ./Framework/*CloseAllApplications* - Logs out and closes applications used throughout the process
 
-## Process Workflow
 
-1. **Connect to Database**  
-   Retrieves truck status data based on predefined SQL queries.
+### For New Project ###
 
-2. **Data Validation and Manipulation**  
-   Cleans the data, validates missing or invalid entries, and summarizes key metrics:
-   - Number of vehicles
-   - Number of transactions
-   - Net weight (actual vs theoretical)
-   - Average completion time
-
-3. **Generate Report Text**  
-   Converts the processed data into a WhatsApp-friendly text message.
-
-4. **Send Report to WhatsApp Group**  
-   Opens WhatsApp Web, navigates to the target group, pastes the report text into the chat box, and sends it using UI automation.
-
-5. **Exception Handling**  
-   - Errors are logged systematically.
-   - A screenshot is captured when an exception occurs and saved in the `Exceptions_Screenshots` folder for review.
-
-## How to Run
-
-1. Clone or download this repository.
-2. Open the project in **UiPath Studio**.
-3. Configure the following:
-   - Database connection strings in `Data\Config.xlsx`.
-   - WhatsApp target group name or UI selectors if needed.
-4. Make sure WhatsApp Web is logged in on the machine where the robot is running.
-5. Run `Main.xaml` from UiPath Studio or publish to Orchestrator for scheduled execution.
-
-## Sample WhatsApp Report Output
-
-Below is an example of the report that this automation sends to the WhatsApp group:
-
-![Sample WhatsApp Report](Screenshots/whatsapp-report-sample.jpeg)
-
-## Contact
-
-For collaboration, inquiries, or further discussion regarding RPA solutions, feel free to reach out:
-
-- Email: fadillah650@gmail.com
-- LinkedIn: https://linkedin.com/in/enrico-naufal-fadilla-54338a256
+1. Check the Config.xlsx file and add/customize any required fields and values
+2. Implement InitiAllApplications.xaml and CloseAllApplicatoins.xaml workflows, linking them in the Config.xlsx fields
+3. Implement GetTransactionData.xaml and SetTransactionStatus.xaml according to the transaction type being used (Orchestrator queues by default)
+4. Implement Process.xaml workflow and invoke other workflows related to the process being automated

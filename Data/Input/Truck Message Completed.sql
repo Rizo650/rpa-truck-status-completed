@@ -1,0 +1,1 @@
+wbms.dbo.sp_truck_message_completed
